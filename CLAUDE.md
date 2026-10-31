@@ -41,6 +41,10 @@ The sim schema in Postgres belongs to the simulation, not to Larkspur. sim.truth
 * Agents and tools never write to FREIGHTCORE's tables. The one write path is the SOAP service's SchedulePickup, used from week 7
 * Keep legacy code crufty. Don't refactor or clean it up unless the week's exercise calls for it
 
+## Larkspur's people
+
+Issues labeled client are messages from Larkspur's stakeholders, written in the cloud from a sealed file that never comes to cooper. Never play a stakeholder, draft their replies, or guess what they'd say or know. If Manoj wants to talk to one, point him to docs/CLIENT.md. Deliverables go in docs/deliverables/ as pull requests labeled deliverable.
+
 ## Running Larkspur
 
 * Start or update: `./infra/up.sh`, which builds the image, seeds the database the first time and runs smoke.sh. `./infra/up.sh --reseed` rebuilds history from the seed

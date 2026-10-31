@@ -6,7 +6,7 @@ I'm Manoj Parvathaneni, a support engineer learning to build with Claude on the 
 
 Larkspur is alive. A seeded history gives it a past quarter of 120,000 shipments and 24,000 customer contacts, and a world engine keeps the business moving on a real clock: freight gets picked up and scanned, invoices go out, things get damaged, customers write in, and Larkspur's own agents answer at their usual pace.
 
-What I learn each week is written up in my field notes.
+Larkspur's people reach me through issues labeled client; docs/CLIENT.md explains how that works. What I learn each week is written up in my field notes.
 
 ## Layout
 

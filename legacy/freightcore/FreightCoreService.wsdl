@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- FreightCoreService v1.2  2014-09  DO NOT CHANGE, partners generate clients from this -->
+<definitions name="FreightCoreService"
+  targetNamespace="http://www.larkspurfreight.example/fcws/2014"
+  xmlns="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:fc="http://www.larkspurfreight.example/fcws/2014">
+  <types>
+    <xsd:schema targetNamespace="http://www.larkspurfreight.example/fcws/2014" elementFormDefault="qualified">
+      <xsd:element name="AuthHeader"><xsd:complexType><xsd:sequence>
+        <xsd:element name="UserId" type="xsd:string"/><xsd:element name="Password" type="xsd:string"/>
+      </xsd:sequence></xsd:complexType></xsd:element>
+      <xsd:element name="Trace"><xsd:complexType><xsd:sequence>
+        <xsd:element name="ProNumber" type="xsd:string" minOccurs="0"/><xsd:element name="BolNumber" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence></xsd:complexType></xsd:element>
+      <xsd:complexType name="EventType"><xsd:sequence>
+        <xsd:element name="Code" type="xsd:string"/><xsd:element name="Reason" type="xsd:string"/>
+        <xsd:element name="Terminal" type="xsd:string"/><xsd:element name="Timestamp" type="xsd:dateTime"/>
+      </xsd:sequence></xsd:complexType>
+      <xsd:element name="TraceResponse"><xsd:complexType><xsd:sequence>
+        <xsd:element name="ProNumber" type="xsd:string"/><xsd:element name="BolNumber" type="xsd:string"/>
+        <xsd:element name="PickupDate" type="xsd:date"/><xsd:element name="Origin" type="xsd:string"/>
+        <xsd:element name="Destination" type="xsd:string"/><xsd:element name="Pieces" type="xsd:int"/>
+        <xsd:element name="Weight" type="xsd:int"/><xsd:element name="StatusCode" type="xsd:string"/>
+        <xsd:element name="StatusDate" type="xsd:string"/><xsd:element name="CurrentTerminal" type="xsd:string"/>
+        <xsd:element name="EstimatedDelivery" type="xsd:string"/><xsd:element name="DeliveredDate" type="xsd:string"/>
+        <xsd:element name="SignedBy" type="xsd:string"/>
+        <xsd:element name="Events"><xsd:complexType><xsd:sequence>
+          <xsd:element name="Event" type="fc:EventType" minOccurs="0" maxOccurs="10"/>
+        </xsd:sequence></xsd:complexType></xsd:element>
+      </xsd:sequence></xsd:complexType></xsd:element>
+      <xsd:element name="GetQuote"><xsd:complexType><xsd:sequence>
+        <xsd:element name="OriginZip" type="xsd:string"/><xsd:element name="DestinationZip" type="xsd:string"/>
+        <xsd:element name="Class" type="xsd:string"/><xsd:element name="Weight" type="xsd:string"/>
+        <xsd:element name="Accessorials" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence></xsd:complexType></xsd:element>
+      <xsd:element name="GetQuoteResponse"><xsd:complexType><xsd:sequence>
+        <xsd:element name="QuoteNumber" type="xsd:string"/><xsd:element name="OriginTerminal" type="xsd:string"/>
+        <xsd:element name="DestinationTerminal" type="xsd:string"/><xsd:element name="TransitDays" type="xsd:int"/>
+        <xsd:element name="Linehaul" type="xsd:decimal"/><xsd:element name="Accessorials" type="xsd:decimal"/>
+        <xsd:element name="FuelSurcharge" type="xsd:decimal"/><xsd:element name="Total" type="xsd:decimal"/>
+        <xsd:element name="ValidThrough" type="xsd:date"/>
+      </xsd:sequence></xsd:complexType></xsd:element>
+      <xsd:element name="SchedulePickup"><xsd:complexType><xsd:sequence>
+        <xsd:element name="AccountNumber" type="xsd:string"/><xsd:element name="PickupDate" type="xsd:date"/>
+        <xsd:element name="ReadyTime" type="xsd:string"/><xsd:element name="CloseTime" type="xsd:string"/>
+        <xsd:element name="Pieces" type="xsd:int"/><xsd:element name="Weight" type="xsd:int"/>
+      </xsd:sequence></xsd:complexType></xsd:element>
+      <xsd:element name="SchedulePickupResponse"><xsd:complexType><xsd:sequence>
+        <xsd:element name="ConfirmationNumber" type="xsd:string"/><xsd:element name="PickupDate" type="xsd:date"/>
+      </xsd:sequence></xsd:complexType></xsd:element>
+    </xsd:schema>
+  </types>
+  <message name="AuthHeader"><part name="AuthHeader" element="fc:AuthHeader"/></message>
+  <message name="TraceIn"><part name="parameters" element="fc:Trace"/></message>
+  <message name="TraceOut"><part name="parameters" element="fc:TraceResponse"/></message>
+  <message name="GetQuoteIn"><part name="parameters" element="fc:GetQuote"/></message>
+  <message name="GetQuoteOut"><part name="parameters" element="fc:GetQuoteResponse"/></message>
+  <message name="SchedulePickupIn"><part name="parameters" element="fc:SchedulePickup"/></message>
+  <message name="SchedulePickupOut"><part name="parameters" element="fc:SchedulePickupResponse"/></message>
+  <portType name="FreightCorePort">
+    <operation name="Trace"><input message="fc:TraceIn"/><output message="fc:TraceOut"/></operation>
+    <operation name="GetQuote"><input message="fc:GetQuoteIn"/><output message="fc:GetQuoteOut"/></operation>
+    <operation name="SchedulePickup"><input message="fc:SchedulePickupIn"/><output message="fc:SchedulePickupOut"/></operation>
+  </portType>
+  <binding name="FreightCoreBinding" type="fc:FreightCorePort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="Trace"><soap:operation soapAction="http://www.larkspurfreight.example/fcws/2014/Trace"/>
+      <input><soap:header message="fc:AuthHeader" part="AuthHeader" use="literal"/><soap:body use="literal"/></input><output><soap:body use="literal"/></output></operation>
+    <operation name="GetQuote"><soap:operation soapAction="http://www.larkspurfreight.example/fcws/2014/GetQuote"/>
+      <input><soap:header message="fc:AuthHeader" part="AuthHeader" use="literal"/><soap:body use="literal"/></input><output><soap:body use="literal"/></output></operation>
+    <operation name="SchedulePickup"><soap:operation soapAction="http://www.larkspurfreight.example/fcws/2014/SchedulePickup"/>
+      <input><soap:header message="fc:AuthHeader" part="AuthHeader" use="literal"/><soap:body use="literal"/></input><output><soap:body use="literal"/></output></operation>
+  </binding>
+  <service name="FreightCoreService">
+    <port name="FreightCorePort" binding="fc:FreightCoreBinding">
+      <soap:address location="http://freightcore:8080/fcws/FreightCoreService"/>
+    </port>
+  </service>
+</definitions>

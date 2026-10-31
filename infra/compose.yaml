@@ -1,0 +1,76 @@
+# Larkspur's estate on cooper. Every port binds to 127.0.0.1: Docker published ports bypass ufw,
+# so nothing here is reachable from the internet. Reach it through an SSH tunnel, or through Caddy later.
+name: larkspur
+
+x-legacy: &legacy
+  build:
+    context: ..
+    dockerfile: infra/legacy.Dockerfile
+  image: larkspur-legacy:latest
+  restart: unless-stopped
+  env_file: ../.env
+  environment:
+    DATABASE_URL: postgresql://larkspur:${POSTGRES_PASSWORD}@db:5432/larkspur
+    EDI_DIR: /srv/larkspur/edi
+    EXTRACT_DIR: /srv/larkspur/extracts
+    IMAGING_DIR: /srv/larkspur/imaging
+  volumes:
+    - files:/srv/larkspur
+  depends_on:
+    db:
+      condition: service_healthy
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: larkspur
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: larkspur
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U larkspur -d larkspur"]
+      interval: 5s
+      retries: 20
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+
+  freightcore:
+    <<: *legacy
+    working_dir: /app/legacy/freightcore
+    command: ["uvicorn", "fcws:app", "--host", "0.0.0.0", "--port", "8080"]
+    ports:
+      - "127.0.0.1:8080:8080"
+
+  deskline:
+    <<: *legacy
+    working_dir: /app/legacy/deskline
+    command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8090"]
+    ports:
+      - "127.0.0.1:8090:8090"
+
+  world:
+    <<: *legacy
+    command: ["python", "-m", "larkspur_world.engine", "run"]
+    environment:
+      DATABASE_URL: postgresql://larkspur:${POSTGRES_PASSWORD}@db:5432/larkspur
+      EDI_DIR: /srv/larkspur/edi
+      EXTRACT_DIR: /srv/larkspur/extracts
+      IMAGING_DIR: /srv/larkspur/imaging
+      DESKLINE_URL: http://deskline:8090
+
+  seed:
+    <<: *legacy
+    profiles: ["tools"]
+    restart: "no"
+    command: ["python", "-m", "larkspur_data.seed"]
+
+volumes:
+  pgdata:
+  files:

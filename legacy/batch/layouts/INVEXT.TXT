@@ -1,0 +1,10 @@
+      * INVEXT  INVOICE EXTRACT  FIXED 53 BYTES + LF
+       01  INVEXT-REC.
+           05  IE-INVNO        PIC X(10).
+           05  IE-PRO          PIC X(9).
+           05  IE-BILLTO       PIC X(8).
+           05  IE-INV-DATE     PIC X(8).
+           05  IE-AMOUNT       PIC 9(9).
+           05  IE-FSC          PIC 9(7).
+           05  IE-STATUS       PIC X(1).
+           05  IE-REBILL       PIC X(1).

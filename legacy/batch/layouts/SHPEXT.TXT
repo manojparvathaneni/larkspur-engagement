@@ -1,0 +1,24 @@
+      * SHPEXT  SHIPMENT EXTRACT  FIXED 207 BYTES + LF
+      * REV 2016-02 PM  (CLS IS CLASS X 10, CHG IS CENTS)
+       01  SHPEXT-REC.
+           05  SE-PRO          PIC X(9).
+           05  SE-BOL          PIC X(15).
+           05  SE-PO           PIC X(15).
+           05  SE-PU-DATE      PIC X(8).
+           05  SE-ORIG-TRM     PIC X(3).
+           05  SE-DEST-TRM     PIC X(3).
+           05  SE-SHIPPER      PIC X(8).
+           05  SE-CONS-NAME    PIC X(30).
+           05  SE-CONS-CITY    PIC X(20).
+           05  SE-CONS-ST      PIC X(2).
+           05  SE-CONS-ZIP     PIC X(5).
+           05  SE-BILLTO       PIC X(8).
+           05  SE-PIECES       PIC 9(4).
+           05  SE-WEIGHT       PIC 9(6).
+           05  SE-CLASS        PIC 9(4).
+           05  SE-CHARGES      PIC 9(9).
+           05  SE-STATUS       PIC X(2).
+           05  SE-STATUS-TS    PIC X(12).
+           05  SE-ETA          PIC X(8).
+           05  SE-DLV-TS       PIC X(12).
+           05  SE-POD          PIC X(20).

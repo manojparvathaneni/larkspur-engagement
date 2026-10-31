@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Deskline: Larkspur Freight Lines</title>
+<style>
+body{font:14px/1.4 system-ui,sans-serif;margin:0;background:#f4f5f7;color:#1d2330}
+header{background:#2b3a55;color:#fff;padding:10px 16px;display:flex;gap:12px;align-items:center}
+header b{font-size:16px}main{display:grid;grid-template-columns:420px 1fr;height:calc(100vh - 44px)}
+#list{overflow:auto;border-right:1px solid #d8dbe2;background:#fff}#list div{padding:8px 12px;border-bottom:1px solid #eee;cursor:pointer}
+#list div:hover{background:#eef2fa}.s{font-size:11px;padding:1px 6px;border-radius:8px;background:#e1e5ee;margin-right:6px}
+#detail{overflow:auto;padding:16px}.msg{background:#fff;border:1px solid #d8dbe2;border-radius:6px;padding:10px;margin-bottom:10px;white-space:pre-wrap}
+.agent{border-left:4px solid #2b7a4b}.customer{border-left:4px solid #2b3a55}small{color:#667}
+</style></head><body>
+<header><b>Deskline</b><span>Larkspur Freight Lines support queue, fictional company</span>
+<select id="st"><option value="new,open,pending">Open</option><option value="">All</option><option value="solved,closed">Solved</option></select></header>
+<main><div id="list"></div><div id="detail"><p>Select a ticket.</p></div></main>
+<script>
+let token = sessionStorage.getItem("dl_token") || prompt("Deskline API token");
+sessionStorage.setItem("dl_token", token);
+const api = (p) => fetch(p, {headers: {Authorization: "Bearer " + token}}).then(r => r.json());
+const esc = (s) => String(s ?? "").replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+async function load() {
+  const st = document.getElementById("st").value;
+  const d = await api("/api/v2/tickets?per_page=100" + (st ? "&status=" + st : ""));
+  document.getElementById("list").innerHTML = d.tickets.map(t =>
+    `<div onclick="show(${t.id})"><span class="s">${t.status}</span><b>${esc(t.subject)}</b><br><small>#${t.id} ${esc(t.requester_company)} · ${new Date(t.created_at).toLocaleString()}</small></div>`).join("");
+}
+async function show(id) {
+  const t = await api("/api/v2/tickets/" + id);
+  document.getElementById("detail").innerHTML = `<h3>#${t.id} ${esc(t.subject)}</h3><small>${t.channel} · ${esc(t.requester_name)} &lt;${esc(t.requester_email)}&gt; · ${esc(t.requester_company)}</small><hr>` +
+    t.messages.map(m => `<div class="msg ${m.author_type}"><small>${esc(m.author_name)} · ${new Date(m.created_at).toLocaleString()}</small><br>${esc(m.body)}</div>`).join("");
+}
+document.getElementById("st").onchange = load; load(); setInterval(load, 60000);
+</script></body></html>

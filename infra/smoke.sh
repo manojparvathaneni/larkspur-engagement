@@ -8,6 +8,14 @@ ok()  { echo "ok    $1"; }
 bad() { echo "FAIL  $1"; fail=1; }
 q()   { docker compose exec -T db psql -U larkspur -d larkspur -tAc "$1" 2>/dev/null; }
 
+# give the services up to 30 seconds to start listening
+for i in $(seq 1 30); do
+  a=$(curl -s -o /dev/null -w '%{http_code}' 'http://127.0.0.1:8080/fcws/FreightCoreService?wsdl')
+  b=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8090/api/v2/tickets)
+  [ "$a" != 000 ] && [ "$b" != 000 ] && break
+  sleep 1
+done
+
 n=$(q "select count(*) from fc.shpmst"); [ "${n:-0}" -gt 1000 ] && ok "database: $n shipments" || bad "database: no shipments"
 t=$(q "select count(*) from hd.tickets"); [ "${t:-0}" -gt 1000 ] && ok "deskline data: $t tickets" || bad "deskline data: no tickets"
 
@@ -27,4 +35,4 @@ clock=$(q "select v->>'clock' from sim.state where k='world'")
 age=$(q "select extract(epoch from (now() at time zone 'America/New_York') - (v->>'clock')::timestamp)::int from sim.state where k='world'")
 [ -n "$age" ] && [ "$age" -lt 600 ] && ok "world clock $clock" || bad "world clock stale: $clock; check 'docker compose logs world'"
 
-[ $fail = 0 ] && echo "Larkspur is up." || { echo "Something's wrong; see above."; exit 1; }
+[ $fail = 0 ] && echo "Larkspur is up." || { echo "Something's wrong; see above."; docker compose ps; exit 1; }

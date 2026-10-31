@@ -14,8 +14,10 @@ free_mb=$(free -m | awk '/^Mem:/ {print $7}')
 [ "$free_mb" -gt 1500 ] || { echo "only ${free_mb} MB available; Larkspur needs about 1.5 GB to start"; exit 1; }
 
 docker compose build
-docker compose up -d db
-seeded=$(docker compose exec -T db psql -U larkspur -d larkspur -tAc "select to_regclass('fc.shpmst') is not null" || echo f)
+docker compose up -d --wait db
+# never treat a failed check as "empty": that would reseed and wipe Larkspur's history
+seeded=$(docker compose exec -T db psql -U larkspur -d larkspur -tAc "select to_regclass('fc.shpmst') is not null") \
+  || { echo "couldn't query the database; not touching it. check: docker compose logs db"; exit 1; }
 if [ "${1:-}" = "--reseed" ] || [ "$seeded" != "t" ]; then
   docker compose stop world 2>/dev/null || true
   echo "seeding Larkspur's history, about a minute"

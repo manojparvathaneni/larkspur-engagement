@@ -2,7 +2,7 @@
 
 This repo is a simulated forward deployed engineering engagement for Larkspur Freight Lines, a fictional regional LTL carrier. Every person, system, customer and number here is invented, and all data is synthetic. Manoj is using it to practice FDE work end to end, from November 2, 2026 to March 21, 2027.
 
-The engagement design, the week by week plan and the coverage matrix live in the claude-field-notes repo under engagement/. Read DESIGN.md there before planning any week's work, and check which week it is.
+The engagement design, the week by week plan and the coverage matrix live at ~/projects/claude-field-notes/engagement/. Read DESIGN.md there before planning any week's work, and check which week it is: week 1 starts Monday November 2, 2026, and a new week starts every Monday. If that folder is missing, ask Manoj to clone claude-field-notes into ~/projects. Never clone larkspur-client onto cooper.
 
 ## Where this runs
 
@@ -52,7 +52,7 @@ Issues labeled client are messages from Larkspur's stakeholders, written in the 
 * Every port binds to 127.0.0.1 because Docker's published ports bypass ufw. FREIGHTCORE is on 8080, Deskline on 8090, Postgres on 5433. Manoj reaches them with an SSH tunnel such as `ssh -L 8090:127.0.0.1:8090 cooper`
 * Public endpoints come later through the existing Caddy server: the agent console and a tracking page, each on a subdomain of agentdidthis.dev behind sign in, and freightcore mcp's remote endpoint behind OAuth. Every public page says Larkspur is fictional
 * Caddy and anything under /var/www/site need sudo. Propose the exact change and let Manoj run it; never edit the live site's files
-* Secrets live in .env on cooper and in GitHub Actions secrets, never in the repo. The Anthropic key comes from a separate workspace with a monthly spend limit
+* Secrets live in .env on cooper and in GitHub Actions secrets, never in the repo. Don't read .env or print secrets. To check a variable is set, test for it without echoing the value. The Anthropic key comes from a separate workspace with a monthly spend limit
 * Ansible practice targets a throwaway VM, never cooper
 
 ## Writing

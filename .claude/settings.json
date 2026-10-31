@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./infra/.env)",
+      "Read(./data/larkspur_data/scenario.enc)"
+    ],
+    "allow": [
+      "Bash(./infra/smoke.sh)",
+      "Bash(docker compose -f infra/compose.yaml ps:*)",
+      "Bash(docker compose -f infra/compose.yaml logs:*)",
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)"
+    ]
+  }
+}
